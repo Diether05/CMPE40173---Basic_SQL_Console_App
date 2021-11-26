@@ -6,6 +6,7 @@ conn = sqlite3.connect('foodapp.db')
 cur = conn.cursor()
 
 
+# close database connection
 def close_db():
     conn.close()
 
@@ -13,7 +14,7 @@ def close_db():
 # select everything from table
 def select_items():
     print('Tables: ')
-    cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    cur.execute("SELECT name FROM sqlite_master WHERE type='table';")  # get all the table in the schema
     print(cur.fetchall())
 
     question = input('\nWould you like to see data? ')
@@ -22,12 +23,15 @@ def select_items():
         name = input('Select a table name: ')
         try:
             cur.execute("SELECT * FROM {}".format(name))
-            rows = list(cur.fetchall())
-            print('Name \t | \t Price \t | \t Stock')
+            rows = cur.fetchall()
+            print('\nID\t|\tProduct\t|\tPrice\t|\tStock\t|\tCategory')
 
             for i in range(len(rows)):
                 row = str(rows[i]).split(',')
                 print(row[0] + '\t ' + row[1] + '\t' + row[2] + '\t ' + row[3] + '\t' + row[4])
+            input("\nPress any key to continue...")
+
+
         except Error as e:
             print(e)
             return select_items()
@@ -96,8 +100,9 @@ def delete_products():
         idd = input('ID of the product: ')
 
         try:
-            cur.execute('DELETE FROM {} where id= "{}"'.format(name,idd))
+            cur.execute('DELETE FROM {} where id= "{}"'.format(name, idd))
             print('Product Deleted\n')
+            input("\nPress any key to continue...")
             conn.commit()
         except Error as e:
             print(e)
@@ -124,11 +129,12 @@ def update_product():
         try:
             cur.execute('SELECT * FROM {} WHERE id = "{}"'.format(table, idd))
             rows = list(cur.fetchall())
-            # print('Name \t | \t Price \t | \t Stock')
+            print('Name \t | \t Price \t | \t Stock')
 
             for i in range(len(rows)):
                 row = str(rows[i]).split(',')
                 print(row[0] + '\t ' + row[1] + '\t' + row[2] + '\t ' + row[3] + '\t' + row[4])
+
 
             if (len(rows)) == 0:
                 print('\nInvalid Item.\n')
@@ -146,6 +152,7 @@ def update_product():
                 for i in range(len(rows)):
                     row = str(rows[i]).split(',')
                     print(row[0] + '\t ' + row[1] + '\t' + row[2] + '\t ' + row[3] + '\t' + row[4])
+                    input("\nPress any key to continue...")
         except Error as e:
             print(e)
             return update_product()
